@@ -1,0 +1,157 @@
+import React, { useState, useEffect } from "react";
+
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Fab,
+  Paper,
+  Stack,
+  Tooltip,
+} from "@mui/material";
+import Card from "@mui/material/Card";
+import SendIcon from "@mui/icons-material/Send";
+import { IpynbRenderer } from "react-ipynb-renderer-katex";
+
+// select jupyter theme
+import "react-ipynb-renderer-katex/dist/styles/chesterish.css";
+// import "react-ipynb-renderer-katex/dist/styles/grade3.css";
+// import "react-ipynb-renderer-katex/dist/styles/gruvboxd.css";
+// import "react-ipynb-renderer-katex/dist/styles/gruvboxl.css";
+//import "react-ipynb-renderer-katex/dist/styles/monokai.css";
+//import "react-ipynb-renderer-katex/dist/styles/oceans16.css";
+//import "react-ipynb-renderer-katex/dist/styles/onedork.css";
+//import "react-ipynb-renderer-katex/dist/styles/solarizedd.css";
+//import "react-ipynb-renderer-katex/dist/styles/solarizedl.css";
+import axios from "axios";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import CardContent from "@mui/material/CardContent";
+import { Typography } from "@mui/material";
+const dict: { [key: string]: string } = {
+  micro: "./ngram.json",
+  ngram: "./ngram.json",
+  mlp: "./mlp.json",
+  batch_norm: "./batch_norm.json",
+  backprop: "./backprop.json",
+};
+const dict_bookmark: { [key: string]: number } = {
+  micro: 0,
+  ngram: -22200,
+  mlp: -558200,
+  batch_norm: -20400,
+  backprop: -4500,
+};
+const title: { [key: string]: string } = {
+  micro: "Micrograd :Neural Networks",
+
+  ngram: "Make More(N-gram)",
+  mlp: "Make More(MLP)",
+  batch_norm: "BatchNorm Activations & Gradients",
+
+  backprop: "Backpropagation",
+};
+const IFrame = ({ link }: { link: string }) => {
+  const [notebook, setNotebooks] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+  React.useEffect(() => {
+    setLoading(true);
+    axios
+      .get(dict[link])
+      .then((res) => {
+        // console.log(res.data.cells.length > 0);
+        setNotebooks(res.data);
+        setLoading(false);
+      })
+      .catch((err: any) => console.log(err));
+  }, [link]);
+  return (
+    <>
+      <Box
+        sx={{
+          paddingLeft: {
+            xs: 0, // theme.spacing(0)
+            sm: 20, // theme.spacing(3)
+            md: 20, // theme.spacing(5)
+            lg: 0,
+          },
+          width: {
+            xs: 500,
+            md: 900,
+            lg: 1200,
+          },
+        }}
+        flex={4}
+        p={2}
+      >
+        <Paper
+          sx={{
+            border: "none",
+            boxShadow: "none",
+            minWidth: 275,
+            mx: "5px",
+            textAlign: "center",
+          }}
+        >
+          <CardContent>
+            <Typography variant="h5" component="div">
+              {title[link]}
+            </Typography>
+          </CardContent>
+
+          <Button
+            size="small"
+            component="a"
+            href="#exercise"
+            sx={{
+              textAlign: "center",
+            }}
+            variant="contained"
+            endIcon={<SendIcon />}
+          >
+            Jump to Exercise
+          </Button>
+        </Paper>
+        <Stack direction={"row"}>
+          <Card sx={{ margin: 5 }}>
+            {loading ||
+              (Object.keys(notebook).length === 0 && <CircularProgress />)}
+            {!loading && Object.keys(notebook).length > 0 && (
+              <IpynbRenderer
+                ipynb={JSON.parse(JSON.stringify(notebook))}
+                syntaxTheme="darcula"
+                language="python"
+                bgTransparent={true}
+                formulaOptions={{
+                  texmath: {
+                    delimiters: "dollars",
+                    katexOptions: {
+                      fleqn: false,
+                    },
+                  },
+                }}
+                mdiOptions={{
+                  html: true,
+                  linkify: true,
+                }}
+              />
+            )}
+          </Card>
+          <Tooltip
+            title="Jump to Exercise"
+            sx={{
+              position: "absolute",
+              bottom: dict_bookmark[link],
+              right: { xs: "calc(5% - 25px) ", md: "calc(18% - 25px) " },
+            }}
+          >
+            <Fab id="exercise" color="primary" aria-label="add">
+              <BookmarkIcon />
+            </Fab>
+          </Tooltip>
+        </Stack>
+      </Box>
+    </>
+  );
+};
+export default IFrame;
