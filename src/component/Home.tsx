@@ -4,7 +4,7 @@ import Post from "./Post";
 import Post1 from "./Post1";
 import Post2 from "./Post2";
 import Post3 from "./Post3";
-const Feed = () => {
+const Home = () => {
   return (
     <Box flex={4} p={2}>
       <Post2 />
@@ -14,4 +14,4 @@ const Feed = () => {
     </Box>
   );
 };
-export default Feed;
+export default Home;

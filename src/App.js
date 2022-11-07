@@ -1,6 +1,5 @@
 import Sidebar from "./component/Sidebar";
-import Feed from "./component/Feed";
-// import Rightbar from "./component/Rightbar";
+import Home from "./component/Home";
 import { Box, createTheme, Stack, ThemeProvider } from "@mui/material";
 import Navbar from "./component/Navbar";
 // import Add from "./component/Add";
@@ -33,7 +32,7 @@ function App() {
         <Stack direction="row" spacing={2} justifyContent="space-between">
           <Sidebar setMode={setMode} mode={mode} />
           <Routes>
-            <Route path="/" element=<Feed /> />
+            <Route path="/" element=<Home /> />
             <Route path="/try" element=<Wip /> />
             {ex_name.map((ex) => (
               <Route
