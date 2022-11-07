@@ -1,5 +1,5 @@
 import React from "react";
-import { IconButton, Typography, Checkbox, Link } from "@mui/material";
+import { IconButton, Typography, Checkbox } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
@@ -11,8 +11,8 @@ import Favorite from "@mui/icons-material/Favorite";
 import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 import ShareIcon from "@mui/icons-material/Share";
 import MoreVert from "@mui/icons-material/MoreVert";
-import img from "./img1.jpg";
-const Post2 = () => {
+
+const Post3 = () => {
   return (
     <Card sx={{ margin: 5 }}>
       <CardHeader
@@ -27,16 +27,20 @@ const Post2 = () => {
           </IconButton>
         }
         title="Jonathan Sum"
-        subheader="October 20, 2022"
+        subheader="September 14, 2018"
       />
-      <CardMedia component="img" height="20%" image={img} alt="img1" />
+      <CardMedia
+        component="img"
+        height="20%"
+        image="https://i.ytimg.com/vi/VMj-3S1tku0/maxresdefault.jpg"
+        alt="Paella dish"
+      />
       <CardContent>
         <Typography variant="body2" color="text.secondary">
           Let's hope this series of videos will improve my NLP skill, so I will
           be able to solve my own NLP problem. It is the problem I personally
           want to solve.
         </Typography>
-        <Link href="https://jonathansum.github.io/">More detail</Link>
       </CardContent>
       <CardActions disableSpacing>
         <IconButton aria-label="add to favorites">
@@ -52,4 +56,4 @@ const Post2 = () => {
     </Card>
   );
 };
-export default Post2;
+export default Post3;

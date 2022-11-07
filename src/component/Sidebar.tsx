@@ -10,7 +10,15 @@ import ModeNightIcon from "@mui/icons-material/ModeNight";
 import Switch from "@mui/material/Switch";
 import { Link as RouterLink } from "react-router-dom";
 import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
-const ex_name = ["micro", "ngram", "mlp", "batch_norm", "backprop"];
+const ex_name = [
+  "micro1",
+  "micro2",
+  "micro_ex",
+  "ngram",
+  "mlp",
+  "batch_norm",
+  "backprop",
+];
 const Sidebar = ({ mode, setMode }: { mode: string; setMode: any }) => {
   // we put another fixed there below another box to avoid overlapping with the Post complement.
   return (
@@ -39,7 +47,7 @@ const Sidebar = ({ mode, setMode }: { mode: string; setMode: any }) => {
                 />
               </ListItemIcon>
               <ListItemText
-                primary="Micrograd"
+                primary="Micrograd(1)"
                 secondary={
                   <React.Fragment>
                     <Typography
@@ -48,7 +56,7 @@ const Sidebar = ({ mode, setMode }: { mode: string; setMode: any }) => {
                       variant="body2"
                       color="text.primary"
                     >
-                      Neural Networks
+                      Auto-diff Engine
                     </Typography>
                   </React.Fragment>
                 }
@@ -59,9 +67,30 @@ const Sidebar = ({ mode, setMode }: { mode: string; setMode: any }) => {
           <ListItem disablePadding>
             <ListItemButton component={RouterLink} to={`/${ex_name[1]}`}>
               <ListItemIcon>
-                <HistoryEduIcon />
+                <HistoryEduIcon
+                  sx={{
+                    mb: 2,
+                    display: "flex",
+                    alignItems: "top",
+                    flexWrap: "wrap",
+                  }}
+                />
               </ListItemIcon>
-              <ListItemText primary="Make More(N-gram)" />
+              <ListItemText
+                primary="Micrograd(2)"
+                secondary={
+                  <React.Fragment>
+                    <Typography
+                      sx={{ display: "inline" }}
+                      component="span"
+                      variant="body2"
+                      color="text.primary"
+                    >
+                      Auto-diff Engine
+                    </Typography>
+                  </React.Fragment>
+                }
+              />
             </ListItemButton>
           </ListItem>
 
@@ -70,12 +99,30 @@ const Sidebar = ({ mode, setMode }: { mode: string; setMode: any }) => {
               <ListItemIcon>
                 <HistoryEduIcon />
               </ListItemIcon>
-              <ListItemText primary="Make More(MLP)" />
+              <ListItemText primary="Micrograd Exercise" />
             </ListItemButton>
           </ListItem>
 
           <ListItem disablePadding>
             <ListItemButton component={RouterLink} to={`/${ex_name[3]}`}>
+              <ListItemIcon>
+                <HistoryEduIcon />
+              </ListItemIcon>
+              <ListItemText primary="Make More(N-gram)" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={RouterLink} to={`/${ex_name[4]}`}>
+              <ListItemIcon>
+                <HistoryEduIcon />
+              </ListItemIcon>
+              <ListItemText primary="Make More(MLP)" />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding>
+            <ListItemButton component={RouterLink} to={`/${ex_name[5]}`}>
               <ListItemIcon>
                 <HistoryEduIcon
                   sx={{
@@ -105,7 +152,7 @@ const Sidebar = ({ mode, setMode }: { mode: string; setMode: any }) => {
           </ListItem>
 
           <ListItem disablePadding>
-            <ListItemButton component={RouterLink} to={`/${ex_name[4]}`}>
+            <ListItemButton component={RouterLink} to={`/${ex_name[6]}`}>
               <ListItemIcon>
                 <HistoryEduIcon />
               </ListItemIcon>

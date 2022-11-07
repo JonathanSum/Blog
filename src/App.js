@@ -1,15 +1,23 @@
 import Sidebar from "./component/Sidebar";
 import Feed from "./component/Feed";
-import Rightbar from "./component/Rightbar";
+// import Rightbar from "./component/Rightbar";
 import { Box, createTheme, Stack, ThemeProvider } from "@mui/material";
 import Navbar from "./component/Navbar";
-import Add from "./component/Add";
+// import Add from "./component/Add";
 import { useState } from "react";
 import { Routes, Route } from "react-router";
 import Exercices from "./view/Exercices";
 import Wip from "./view/Wip";
 
-const ex_name = ["micro", "ngram", "mlp", "batch_norm", "backprop"];
+const ex_name = [
+  "micro1",
+  "micro2",
+  "micro_ex",
+  "ngram",
+  "mlp",
+  "batch_norm",
+  "backprop",
+];
 
 function App() {
   const [mode, setMode] = useState("light");
@@ -26,7 +34,6 @@ function App() {
           <Sidebar setMode={setMode} mode={mode} />
           <Routes>
             <Route path="/" element=<Feed /> />
-            <Route path="/micro" element=<Wip /> />
             <Route path="/try" element=<Wip /> />
             {ex_name.map((ex) => (
               <Route

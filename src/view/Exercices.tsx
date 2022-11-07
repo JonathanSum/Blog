@@ -1,9 +1,9 @@
 import React from "react";
 
-import IFrame from "./IFrame";
+import Notebook from "./Notebook";
 
 const Exercices = ({ ex }: { ex: string }) => {
-  return <IFrame link={ex} />;
+  return <Notebook link={ex} />;
 };
 
 export default Exercices;

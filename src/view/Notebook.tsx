@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import {
   Box,
@@ -28,36 +28,40 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import CardContent from "@mui/material/CardContent";
 import { Typography } from "@mui/material";
 const dict: { [key: string]: string } = {
-  micro: "./ngram.json",
-  ngram: "./ngram.json",
-  mlp: "./mlp.json",
-  batch_norm: "./batch_norm.json",
-  backprop: "./backprop.json",
+  micro1: "/micro1.json",
+  micro2: "/micro2.json",
+  micro_ex: "/micro_ex.json",
+  ngram: "/ngram.json",
+  mlp: "/mlp.json",
+  batch_norm: "/batch_norm.json",
+  backprop: "/backprop.json",
 };
-const dict_bookmark: { [key: string]: number } = {
-  micro: 0,
-  ngram: -22200,
-  mlp: -558200,
-  batch_norm: -20400,
-  backprop: -4500,
-};
+// const dict_bookmark: { [key: string]: number } = {
+//   micro1: 0,
+//   micro2: 0,
+//   micro_ex: 0,
+//   ngram: -22200,
+//   mlp: -558200,
+//   batch_norm: -20400,
+//   backprop: -4500,
+// };
 const title: { [key: string]: string } = {
-  micro: "Micrograd :Neural Networks",
-
+  micro1: "Micro Autograd Engine 1",
+  micro2: "Micro Autograd Engine 2",
+  micro_ex: "Micro Autograd Engine Exercise",
   ngram: "Make More(N-gram)",
   mlp: "Make More(MLP)",
   batch_norm: "BatchNorm Activations & Gradients",
-
   backprop: "Backpropagation",
 };
-const IFrame = ({ link }: { link: string }) => {
+const Notebook = ({ link }: { link: string }) => {
   const [notebook, setNotebooks] = useState([]);
 
   const [loading, setLoading] = useState(false);
-  React.useEffect(() => {
+  useEffect(() => {
     setLoading(true);
     axios
-      .get(dict[link])
+      .get(process.env.PUBLIC_URL + dict[link])
       .then((res) => {
         // console.log(res.data.cells.length > 0);
         setNotebooks(res.data);
@@ -98,60 +102,33 @@ const IFrame = ({ link }: { link: string }) => {
               {title[link]}
             </Typography>
           </CardContent>
-
-          <Button
-            size="small"
-            component="a"
-            href="#exercise"
-            sx={{
-              textAlign: "center",
-            }}
-            variant="contained"
-            endIcon={<SendIcon />}
-          >
-            Jump to Exercise
-          </Button>
         </Paper>
-        <Stack direction={"row"}>
-          <Card sx={{ margin: 5 }}>
-            {loading ||
-              (Object.keys(notebook).length === 0 && <CircularProgress />)}
-            {!loading && Object.keys(notebook).length > 0 && (
-              <IpynbRenderer
-                ipynb={JSON.parse(JSON.stringify(notebook))}
-                syntaxTheme="darcula"
-                language="python"
-                bgTransparent={true}
-                formulaOptions={{
-                  texmath: {
-                    delimiters: "dollars",
-                    katexOptions: {
-                      fleqn: false,
-                    },
+        <Card sx={{ margin: 5 }}>
+          {loading ||
+            (Object.keys(notebook).length === 0 && <CircularProgress />)}
+          {!loading && Object.keys(notebook).length > 0 && (
+            <IpynbRenderer
+              ipynb={JSON.parse(JSON.stringify(notebook))}
+              syntaxTheme="darcula"
+              language="python"
+              bgTransparent={true}
+              formulaOptions={{
+                texmath: {
+                  delimiters: "dollars",
+                  katexOptions: {
+                    fleqn: false,
                   },
-                }}
-                mdiOptions={{
-                  html: true,
-                  linkify: true,
-                }}
-              />
-            )}
-          </Card>
-          <Tooltip
-            title="Jump to Exercise"
-            sx={{
-              position: "absolute",
-              bottom: dict_bookmark[link],
-              right: { xs: "calc(5% - 25px) ", md: "calc(18% - 25px) " },
-            }}
-          >
-            <Fab id="exercise" color="primary" aria-label="add">
-              <BookmarkIcon />
-            </Fab>
-          </Tooltip>
-        </Stack>
+                },
+              }}
+              mdiOptions={{
+                html: true,
+                linkify: true,
+              }}
+            />
+          )}
+        </Card>
       </Box>
     </>
   );
 };
-export default IFrame;
+export default Notebook;

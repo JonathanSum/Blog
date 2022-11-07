@@ -43,7 +43,7 @@ const Navbar = () => {
     <AppBar position="sticky">
       <StyledToobar>
         <Typography variant="h6" sx={{ display: { xs: "none", sm: "block" } }}>
-          Artifical Intellgence
+          Artificial intelligence
         </Typography>
         <CelebrationIcon sx={{ display: { xs: "block", sm: "block" } }} />
         <Search>
@@ -59,7 +59,7 @@ const Navbar = () => {
           <UserBox onClick={(e) => setOpen(true)}>
             <Avatar
               sx={{ width: 40, height: 40 }}
-              src="https://avatars.githubusercontent.com/u/21982975?v=4"
+              src="https://avatars.githubusercontent.com/u/21982975?s=400&u=ec63b30c21b21c418f0f6831154957c55c916c12&v=4"
             />
             <Typography variant="body1">Jonathan Sum</Typography>
           </UserBox>

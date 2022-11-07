@@ -1,1 +1,56 @@
-{"homepage":"http://Jonathansum.github.io/Blog","name":"projects_website","version":"0.1.0","private":true,"dependencies":{"@emotion/react":"^11.10.4","@emotion/styled":"^11.10.4","@mui/icons-material":"^5.10.6","@mui/material":"^5.10.8","@testing-library/jest-dom":"^5.14.1","@testing-library/react":"^13.0.0","@testing-library/user-event":"^13.2.1","@types/axios":"^0.14.0","@types/jest":"^29.1.2","@types/node":"^18.8.4","@types/react":"^18.0.21","@types/react-dom":"^18.0.6","react":"^18.2.0","react-dom":"^18.2.0","react-ipynb-renderer-katex":"^1.0.1","react-router-dom":"6","react-scripts":"5.0.1","typescript":"^4.8.4","web-vitals":"^2.1.0"},"scripts":{"start":"react-scripts start","build":"react-scripts build","test":"react-scripts test","eject":"react-scripts eject","predeploy":"npm run build","deploy":"gh-pages -d build"},"eslintConfig":{"extends":["react-app","react-app/jest"]},"browserslist":{"production":[">0.2%","not dead","not op_mini all"],"development":["last 1 chrome version","last 1 firefox version","last 1 safari version"]},"devDependencies":{"gh-pages":"^4.0.0"}}
+{
+  "homepage": "https://jonathansum.github.io/Blog",
+  "name": "projects_website",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "@mui/icons-material": "^5.10.6",
+    "@mui/material": "^5.10.8",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^13.0.0",
+    "@testing-library/user-event": "^13.2.1",
+    "@types/axios": "^0.14.0",
+    "@types/jest": "^29.1.2",
+    "@types/node": "^18.8.4",
+    "@types/react": "^18.0.21",
+    "@types/react-dom": "^18.0.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-ipynb-renderer-katex": "^1.0.1",
+    "react-router-dom": "6",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.8.4",
+    "web-vitals": "^2.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+       "predeploy": "npm run build",
+       "deploy": "gh-pages -d build"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "gh-pages": "^4.0.0"
+  }
+}

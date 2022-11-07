@@ -12,7 +12,7 @@ import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 import ShareIcon from "@mui/icons-material/Share";
 import MoreVert from "@mui/icons-material/MoreVert";
 import { Box } from "@mui/system";
-
+import wip from "../files/wip.jpg";
 const Wip = () => {
   return (
     <Box flex={4} p={2}>
@@ -31,12 +31,7 @@ const Wip = () => {
           title="Jonathan Sum"
           subheader="October 14, 2022"
         />
-        <CardMedia
-          component="img"
-          height="20%"
-          image="wip.jpg"
-          alt="Paella dish"
-        />
+        <CardMedia component="img" height="20%" image={wip} alt="Paella dish" />
         <CardContent>
           <Typography variant="body2" color="text.secondary">
             Work in process, update soon.
