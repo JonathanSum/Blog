@@ -33431,7 +33431,7 @@
       "source": [
         "(2) Can you tune the initialization to get a starting loss that is much more similar to (1)?\n",
         "\n",
-        "Yes, that is by making the network not working. Making the number of feature to be small in the layer."
+        "Yes, that is by making the network not work. For example, multiplying the layer weight before the Tanh to be a very large number. Another possible is by making the first layer weight to be zero."
       ]
     },
     {
