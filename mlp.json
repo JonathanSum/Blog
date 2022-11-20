@@ -33431,7 +33431,7 @@
       "source": [
         "(2) Can you tune the initialization to get a starting loss that is much more similar to (1)?\n",
         "\n",
-        "I don't think I can because perfectly uniform means not learning. We can't really train a model with a trainable weight, and got a perfectly uniform prediction at the end, unless the model is not working."
+        "Yes, that is by making the network not working. Making the number of feature to be small in the layer."
       ]
     },
     {
