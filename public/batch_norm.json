@@ -1821,7 +1821,7 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-        "We can tell the model is not learning at all. The t.std()/p.std()) is the gradient of the scale of the trainable parameter of the linear layer per scale of the trainable parameters. It is getting close to zero into the later layers."
+        "We can tell the model is not really not learning. However, we can see all the gradients of the weight or all the gradients of the features inside the layers are identical. Gradient means doing learning or optimization. If All the features inside the layers have the same gradient during learning, it means all the features are learning the same thing. It means the model can not learn some features to identify the different objects. It is just like a model can not use weight or height to identify the health of the person."
       ]
     },
     {
@@ -1857,7 +1857,7 @@
       "cell_type": "markdown",
       "metadata": {},
       "source": [
-        "The model is not learning at all!"
+        "It is out of range I should spend more time scaling it down. But if it is zero weight, it is highly possible true during the earlier training but ended up being a non-zero term in the later training."
       ]
     },
     {
