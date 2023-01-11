@@ -1765,13 +1765,6 @@
       ]
     },
     {
-      "cell_type": "markdown",
-      "metadata": {},
-      "source": [
-        "The gradient also becomes zero mostly. "
-      ]
-    },
-    {
       "cell_type": "code",
       "execution_count": 133,
       "metadata": {},
