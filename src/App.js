@@ -16,6 +16,9 @@ const ex_name = [
   "mlp",
   "batch_norm",
   "backprop",
+  "wave_net",
+  "gpt2_part1",
+  "gpt2_part2",
 ];
 
 function App() {
@@ -29,7 +32,7 @@ function App() {
     <ThemeProvider theme={darkTheme}>
       <Box bgcolor={"background.default"} color={"text.primary"}>
         <Navbar />
-        <Stack direction="row" spacing={2} justifyContent="space-between">
+        <Stack direction="row">
           <Sidebar setMode={setMode} mode={mode} />
           <Routes>
             <Route path="/" element=<Home /> />
@@ -42,9 +45,7 @@ function App() {
               />
             ))}
           </Routes>
-          {/* <Rightbar /> */}
         </Stack>
-        {/* <Add /> */}
       </Box>
     </ThemeProvider>
   );

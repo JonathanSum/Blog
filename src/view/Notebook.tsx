@@ -1,30 +1,22 @@
 import { useState, useEffect } from "react";
 
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Fab,
-  Paper,
-  Stack,
-  Tooltip,
-} from "@mui/material";
+import { Box, CircularProgress, Paper } from "@mui/material";
 import Card from "@mui/material/Card";
-import SendIcon from "@mui/icons-material/Send";
 import { IpynbRenderer } from "react-ipynb-renderer-katex";
 
 // select jupyter theme
-import "react-ipynb-renderer-katex/dist/styles/chesterish.css";
+// import "react-ipynb-renderer-katex/dist/styles/chesterish.css";
+
 // import "react-ipynb-renderer-katex/dist/styles/grade3.css";
+
 // import "react-ipynb-renderer-katex/dist/styles/gruvboxd.css";
 // import "react-ipynb-renderer-katex/dist/styles/gruvboxl.css";
-//import "react-ipynb-renderer-katex/dist/styles/monokai.css";
-//import "react-ipynb-renderer-katex/dist/styles/oceans16.css";
+// import "react-ipynb-renderer-katex/dist/styles/monokai.css";
+// import "react-ipynb-renderer-katex/dist/styles/oceans16.css";
 //import "react-ipynb-renderer-katex/dist/styles/onedork.css";
-//import "react-ipynb-renderer-katex/dist/styles/solarizedd.css";
-//import "react-ipynb-renderer-katex/dist/styles/solarizedl.css";
+import "react-ipynb-renderer-katex/dist/styles/solarizedd.css";
+// import "react-ipynb-renderer-katex/dist/styles/solarizedl.css";
 import axios from "axios";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
 import CardContent from "@mui/material/CardContent";
 import { Typography } from "@mui/material";
 const dict: { [key: string]: string } = {
@@ -35,7 +27,11 @@ const dict: { [key: string]: string } = {
   mlp: "/mlp.json",
   batch_norm: "/batch_norm.json",
   backprop: "/backprop.json",
+  wave_net: "/wave_net.json",
+  gpt2_part1: "/gpt2_part1.json",
+  gpt2_part2: "/gpt2_part2.json",
 };
+
 // const dict_bookmark: { [key: string]: number } = {
 //   micro1: 0,
 //   micro2: 0,
@@ -53,12 +49,16 @@ const title: { [key: string]: string } = {
   mlp: "Make More(MLP)",
   batch_norm: "BatchNorm Activations & Gradients",
   backprop: "Backpropagation",
+  wave_net: "WaveNet",
+  gpt2_part1: "GPT Exercises Part 1",
+  gpt2_part2: "GPT Exercises Part 2",
 };
 const Notebook = ({ link }: { link: string }) => {
   const [notebook, setNotebooks] = useState([]);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
+    console.log("loading", process.env.PUBLIC_URL + dict[link]);
     setLoading(true);
     axios
       .get(process.env.PUBLIC_URL + dict[link])
@@ -104,27 +104,29 @@ const Notebook = ({ link }: { link: string }) => {
           </CardContent>
         </Paper>
         <Card sx={{ margin: 5 }}>
-          {loading ||
-            (Object.keys(notebook).length === 0 && <CircularProgress />)}
-          {!loading && Object.keys(notebook).length > 0 && (
-            <IpynbRenderer
-              ipynb={JSON.parse(JSON.stringify(notebook))}
-              syntaxTheme="darcula"
-              language="python"
-              bgTransparent={true}
-              formulaOptions={{
-                texmath: {
-                  delimiters: "dollars",
-                  katexOptions: {
-                    fleqn: false,
+          {loading ? (
+            <CircularProgress />
+          ) : (
+            Object.keys(notebook).length > 0 && (
+              <IpynbRenderer
+                ipynb={JSON.parse(JSON.stringify(notebook))}
+                syntaxTheme="darcula"
+                language="python"
+                bgTransparent={true}
+                formulaOptions={{
+                  texmath: {
+                    delimiters: "dollars",
+                    katexOptions: {
+                      fleqn: false,
+                    },
                   },
-                },
-              }}
-              mdiOptions={{
-                html: true,
-                linkify: true,
-              }}
-            />
+                }}
+                mdiOptions={{
+                  html: true,
+                  linkify: true,
+                }}
+              />
+            )
           )}
         </Card>
       </Box>
