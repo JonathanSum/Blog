@@ -1,0 +1,765 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 227,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "class BasicTokenizer:\n",
+    "    def __init__(self):\n",
+    "        self.load = None\n",
+    "        self.merges = {}\n",
+    "        self.processed = None\n",
+    "        self.num_merges = 0\n",
+    "        self.vocab = {}\n",
+    "    def train(self, text, vocab_size=276, verbose=False):\n",
+    "        self.load = None\n",
+    "\n",
+    "    \n",
+    "        f = open(text, \"r\", encoding=\"utf8\")\n",
+    "        self.load = f.read()\n",
+    "        # print(self.load)\n",
+    "        f.close\n",
+    "\n",
+    "        tokens = self.load.encode(\"utf-8\") # raw bytes\n",
+    "        tokens = list(map(int, tokens)) # convert to a list of integers in range 0..255 for convenience\n",
+    "\n",
+    "        #print max token value and print the readed text\n",
+    "        if verbose:\n",
+    "            print(max(tokens))\n",
+    "            stats = self.get_stats(tokens)\n",
+    "            print(\"top_pair: \",max(stats, key=stats.get))\n",
+    "        # resetting the number of merge and the merges dictionary\n",
+    "        self.num_merges = vocab_size-256\n",
+    "        ids = tokens # copy so we don't destroy the original list\n",
+    "        \n",
+    "        # resetting the merge dictionary every time we train the tokenizor\n",
+    "        self.merges = {} # (int, int)-> int\n",
+    "        self.vocab = {}\n",
+    "        for i in range(self.num_merges):\n",
+    "            stats = self.get_stats(ids)\n",
+    "            pair = max(stats, key=stats.get)\n",
+    "            idx = 256 + i\n",
+    "            if verbose:\n",
+    "                print(f\"merging {pair} into a new token {idx}\")\n",
+    "            ids = self.merge(ids, pair, idx)\n",
+    "            self.merges[pair] = idx\n",
+    "\n",
+    "        # building the vocabary\n",
+    "\n",
+    "        self.vocab = {idx: bytes([idx]) for idx in range(256)}\n",
+    "        for (p0, p1), idx in self.merges.items():\n",
+    "            self.vocab[idx] = self.vocab[p0] + self.vocab[p1]\n",
+    "    def encode(self, text):\n",
+    "        # givent a string return list of integers (the tokens)\n",
+    "    \n",
+    "        tokens = list(text.encode(\"utf-8\"))\n",
+    "        while len(tokens) >= 2:\n",
+    "            stats = self.get_stats(tokens)\n",
+    "            pair = min(stats, key=lambda p: self.merges.get(p, float(\"inf\")))\n",
+    "            if pair not in self.merges:\n",
+    "                break # nothing else can be merged\n",
+    "            idx = self.merges[pair]\n",
+    "            tokens = self.merge(tokens, pair, idx)\n",
+    "        return tokens\n",
+    "    def decode(self, ids):\n",
+    "        # given ids (list of integers), return Python string\n",
+    "        # todo, send this 2-3 lines of code to the main code block\n",
+    "        # to avoid repeating when everytime decode is called\n",
+    "\n",
+    "        tokens = b\"\".join(self.vocab[idx] for idx in ids)\n",
+    "        text = tokens.decode(\"utf-8\", errors=\"replace\")\n",
+    "        return text\n",
+    "    def get_stats(self, ids):\n",
+    "        counts = {}\n",
+    "        for pair in zip(ids, ids[1:]): #Pythonic way to interate\n",
+    "            counts[pair] = counts.get(pair, 0) +1\n",
+    "        return counts\n",
+    "    def merge(self, ids, pair, idx):\n",
+    "        newids = []\n",
+    "        i = 0\n",
+    "        while i < len(ids):\n",
+    "            if i < len(ids) - 1 and ids[i] == pair[0] and ids[i+1] == pair[1]:\n",
+    "                newids.append(idx)\n",
+    "                i += 2\n",
+    "            else:\n",
+    "                newids.append(ids[i])\n",
+    "                i += 1\n",
+    "        return newids\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 228,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "btoken = BasicTokenizer()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 229,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "226\n",
+      "top_pair:  (101, 32)\n",
+      "merging (101, 32) into a new token 256\n",
+      "merging (44, 32) into a new token 257\n",
+      "merging (100, 32) into a new token 258\n",
+      "merging (46, 32) into a new token 259\n",
+      "merging (114, 32) into a new token 260\n",
+      "merging (50, 48) into a new token 261\n",
+      "merging (115, 32) into a new token 262\n",
+      "merging (105, 110) into a new token 263\n",
+      "merging (111, 110) into a new token 264\n",
+      "merging (114, 105) into a new token 265\n",
+      "merging (116, 32) into a new token 266\n",
+      "merging (116, 104) into a new token 267\n",
+      "merging (101, 258) into a new token 268\n",
+      "merging (257, 261) into a new token 269\n",
+      "merging (97, 110) into a new token 270\n",
+      "merging (97, 114) into a new token 271\n",
+      "merging (101, 260) into a new token 272\n",
+      "merging (121, 32) into a new token 273\n",
+      "merging (97, 108) into a new token 274\n",
+      "merging (267, 256) into a new token 275\n"
+     ]
+    }
+   ],
+   "source": [
+    "# btoken.train(\"taylorswift.txt\",25)\n",
+    "btoken.train(\"taylorswift.txt\", verbose=True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 231,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "hello world\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(btoken.decode(btoken.encode(\"hello world\")))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We can see \"hello word\" works with this tokenizor. If we encode it to 8 byte and decode it back, we will get back the orginal \"hello\".\n",
+    "\n",
+    "However, I am going to test 3 more chunk of text to see it is good or not."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 232,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ch1 = \"\"\"upporter of the arts. A benefactor of the Nashville Songwriters Hall of Fame,[610] Swift has donated $75,000 to Nashville's Hendersonville High School to help refurbish the school auditorium,[611] $4 million to build a new education center at the Country Music Hall of Fame and Museum in Nashville,[612] $60,000 to the music departments of six US colleges,[613] and $100,000 to the Nashville Symphony.[614] Also a promoter of children's literacy, she has donated money and books to schools around the country.[615][616] In 2007, Swift partnered with the Tennessee Association of Chiefs of Police to launch a campaign to protect children from online predators.[617] She has donated items to several charities for auction, including the UNICEF Tap Project and MusiCares.[618] As recipient of the Academy of Country Music's Entertainer of the Year in 2011, Swift donated $25,000 to St. Jude Children's Research Hospital, Tennessee.[619] In 2012, Swift participated in the Stand Up to Cancer telethon, performing the charity single \"Ronan\", which she wrote in memory of a four-year-old boy who died of neuroblastoma.[620] She has also donated $100,000 to the V Foundation for Cancer Research[621] and $50,000 to the Children's Hospital of Philadelphia.[622] Swift has encouraged young people to volunteer in their local communities as part of Global Youth Service Day.[623]\n",
+    "Swift donated to fellow singer-songwriter Kesha to help with her legal battles against Dr. Luke and to actress Mariska Hargitay's Joyful Heart Foundation.[593][624] During the COVID-19 pandemic, Swift donated to the World Health Organization and Feeding America,[625] and supported independent record stores.[626][627] Swift performed \"Soon You'll Get Better\" on the One World: Together At Home television special, a benefit concert curated by Lady Gaga for Global Citizen to raise funds for the World Health Organization's COVID-19 Solidarity Response Fund.[628] In 2018 and 2021, Swift donated to the Rape, Abuse & Incest National Network in honor of Sexual Assault Awareness and Prevention Month.[593][629] She has made donations to her fans several times for their medical or academic expenses.[630] In December 2023, Swift attended Ramy Youssef's fundraiser for the Gaza Strip.[631]\n",
+    "Discography\"\"\"\n",
+    "\n",
+    "ch2 = \"\"\"ard Professor Critiques Taylor Swift's New Poems\". Cosmopolitan. Retrieved December 21, 2021.\n",
+    " Sheffield, Rob (October 13, 2023). \"Taylor Swift's 'Era\"\"\"\n",
+    "\n",
+    "ch3 = \"\"\"\n",
+    "Eras Tour' Debut Slays (And Could Break All-Time Touring Record)\". Pollstar. March 18, 2023. Archived from the original on March 20, 2023. Retrieved June 30, 2023.\n",
+    " Aramesh, Waiss David (March 18, 2023). \"Taylor Swift's The Eras Tour Is a 3-Hour Career-Spanning Victory Lap\". Rolling Stone. OCLC 1787396. Archived from the original on March 18, 2023. Retrieved June 30, 2023.\n",
+    " Gambles, Sarah (July 23, 2023). \"The ubiquitous power of Taylor Swift\". Deseret News. Retrieved July 23, 2023.\n",
+    " McCormick, Neil (March 18, 2023). \"Taylor Swift:\n",
+    "\"\"\"\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 110,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 110,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "btoken.decode(btoken.encode(\"hello world\")) == \"hello world\""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 118,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(True, True, True)"
+      ]
+     },
+     "execution_count": 118,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "btoken.decode(btoken.encode(ch1)) == ch1,\\\n",
+    "btoken.decode(btoken.encode(ch2)) == ch2,\\\n",
+    "btoken.decode(btoken.encode(ch3)) == ch3"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We can see they are the same which the tokenizor works"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 123,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "([84, 111, 117, 114, 39, 32], [84, 111, 117, 114, 39])"
+      ]
+     },
+     "execution_count": 123,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "btoken.encode(\"Tour' \"), btoken.encode(\"Tour'\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The next part is using the GPT4 Regex"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 125,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "GPT4_SPLIT_PATTERN = r\"\"\"'(?i:[sdmt]|ll|ve|re)|[^\\r\\n\\p{L}\\p{N}]?+\\p{L}+|\\p{N}{1,3}| ?[^\\s\\p{L}\\p{N}]++[\\r\\n]*|\\s*[\\r\\n]|\\s+(?!\\S)|\\s+\"\"\""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 126,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['Hello', '!', ' How', \"'ve\", ' you', ' been', '?']\n"
+     ]
+    }
+   ],
+   "source": [
+    "import regex as re\n",
+    "gpt2pat = re.compile(GPT4_SPLIT_PATTERN)\n",
+    "print(re.findall(gpt2pat, \"Hello! How've you been?\"))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We can see it breaks the 4 space into 3 spaces as one string and the last space will be put into the next following character\n",
+    "as one string.\n",
+    "The huge number is seprated into different strings with maximum 3 characters length. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 171,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['   ', ' for', ' x', ' in', ' y']\n",
+      "['123', '123', '421', '43', ' is', ' a', ' huge', ' number', '.', ' I', \"'ve\", ' been', ' using', ' it', '.']\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(re.findall(gpt2pat, \"    for x in y\"))\n",
+    "print(re.findall(gpt2pat, \"12312342143 is a huge number. I've been using it.\"))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Step 2\n",
+    "\n",
+    "Convert you BasicTokenizer into a RegexTokenizer, which takes a regex pattern and splits the text exactly as GPT-4 would. Process the parts separately as before, then concatenate the results. Retrain your tokenizer and compare the results before and after. You should see that you will now have no tokens that go across categories (numbers, letters, punctuation, more than one whitespace). Use the GPT-4 pattern:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 168,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[72,\n",
+       " 101,\n",
+       " 108,\n",
+       " 108,\n",
+       " 111,\n",
+       " 33,\n",
+       " 32,\n",
+       " 72,\n",
+       " 111,\n",
+       " 119,\n",
+       " 39,\n",
+       " 118,\n",
+       " 101,\n",
+       " 32,\n",
+       " 121,\n",
+       " 111,\n",
+       " 117,\n",
+       " 32,\n",
+       " 98,\n",
+       " 101,\n",
+       " 101,\n",
+       " 110,\n",
+       " 63]"
+      ]
+     },
+     "execution_count": 168,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "l2 = []\n",
+    "for x in re.findall(gpt2pat, \"Hello! How've you been?\"):\n",
+    "    x = list(map(int,x.encode(\"utf-8\")))\n",
+    "    l2+=x\n",
+    "l2\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 145,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "b'The very name!'"
+      ]
+     },
+     "execution_count": 145,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "text = \"The very name!\"\n",
+    "tokens = text.encode(\"utf-8\")\n",
+    "tokens"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 153,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "84"
+      ]
+     },
+     "execution_count": 153,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "s1 = \"The very name\"\n",
+    "s1 = s1.encode(\"utf-8\")\n",
+    "s1[0]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 239,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "GPT4_SPLIT_PATTERN = r\"\"\"'(?i:[sdmt]|ll|ve|re)|[^\\r\\n\\p{L}\\p{N}]?+\\p{L}+|\\p{N}{1,3}| ?[^\\s\\p{L}\\p{N}]++[\\r\\n]*|\\s*[\\r\\n]|\\s+(?!\\S)|\\s+\"\"\"\n",
+    "class RegexTokenizer:\n",
+    "    def __init__(self):\n",
+    "        self.load = None\n",
+    "        self.merges = {}\n",
+    "        self.processed = None\n",
+    "        self.num_merges = 0\n",
+    "        self.vocab = {}\n",
+    "        self.GPT4_SPLIT_PATTERN =\\\n",
+    "        r\"\"\"'(?i:[sdmt]|ll|ve|re)|[^\\r\\n\\p{L}\\p{N}]?+\\p{L}+|\\p{N}{1,3}| ?[^\\s\\p{L}\\p{N}]++[\\r\\n]*|\\s*[\\r\\n]|\\s+(?!\\S)|\\s+\"\"\"\n",
+    "        self.token_len = -1\n",
+    "        self.id_len = -1\n",
+    "    def compression_ratio(self):\n",
+    "        print(\"tokens length:\", self.token_len)\n",
+    "        print(\"ids length:\", self.id_len)\n",
+    "        print(f\"compression ratio: {self.token_len / self.id_len:.2f}X\")\n",
+    "    def train(self, text, vocab_size=276, verbose=False):\n",
+    "        self.load = None\n",
+    "        \n",
+    "    \n",
+    "        f = open(text, \"r\", encoding=\"utf8\")\n",
+    "        self.load = f.read()\n",
+    "        # print(self.load)\n",
+    "        f.close\n",
+    "        gpt4pat = re.compile(GPT4_SPLIT_PATTERN)\n",
+    "        print(re.findall(gpt4pat, \"Hello! How've you been?\"))\n",
+    "        tokens = re.findall(gpt4pat, self.load)\n",
+    "\n",
+    "\n",
+    "        temp = []\n",
+    "        for x in tokens:\n",
+    "            x = list(map(int,x.encode(\"utf-8\")))\n",
+    "            temp+=x\n",
+    "        tokens = temp\n",
+    "\n",
+    "\n",
+    "        self.token_len = len(tokens)\n",
+    "        print(\"self.token_len!!!!!!!!!!!\")\n",
+    "        print(self.token_len)\n",
+    "        \n",
+    "        #print max token value and print the readed text\n",
+    "        if verbose:\n",
+    "            print(max(tokens))\n",
+    "            stats = self.get_stats(tokens)\n",
+    "            print(\"top_pair: \",max(stats, key=stats.get))\n",
+    "        # resetting the number of merge and the merges dictionary\n",
+    "        self.num_merges = vocab_size-256\n",
+    "        ids = tokens # copy so we don't destroy the original list\n",
+    "        \n",
+    "        # resetting the merge dictionary every time we train the tokenizor\n",
+    "        self.merges = {} # (int, int)-> int\n",
+    "        self.vocab = {}\n",
+    "        for i in range(self.num_merges):\n",
+    "            stats = self.get_stats(ids)\n",
+    "            pair = max(stats, key=stats.get)\n",
+    "            idx = 256 + i\n",
+    "            if verbose:\n",
+    "                print(f\"merging {pair} into a new token {idx}\")\n",
+    "            ids = self.merge(ids, pair, idx)\n",
+    "            self.merges[pair] = idx\n",
+    "\n",
+    "        self.id_len = len(ids)\n",
+    "        print(\"self.id_len!!!!!!!!!!!\")\n",
+    "        print(self.id_len)\n",
+    "\n",
+    "        # building the vocabary\n",
+    "\n",
+    "        self.vocab = {idx: bytes([idx]) for idx in range(256)}\n",
+    "        for (p0, p1), idx in self.merges.items():\n",
+    "            self.vocab[idx] = self.vocab[p0] + self.vocab[p1]\n",
+    "    def encode(self, text):\n",
+    "        # givent a string return list of integers (the tokens)\n",
+    "    \n",
+    "        tokens = list(text.encode(\"utf-8\"))\n",
+    "        while len(tokens) >= 2:\n",
+    "            stats = self.get_stats(tokens)\n",
+    "            pair = min(stats, key=lambda p: self.merges.get(p, float(\"inf\")))\n",
+    "            if pair not in self.merges:\n",
+    "                break # nothing else can be merged\n",
+    "            idx = self.merges[pair]\n",
+    "            tokens = self.merge(tokens, pair, idx)\n",
+    "        return tokens\n",
+    "    def decode(self, ids):\n",
+    "        # given ids (list of integers), return Python string\n",
+    "        # todo, send this 2-3 lines of code to the main code block\n",
+    "        # to avoid repeating when everytime decode is called\n",
+    "\n",
+    "        \n",
+    "        tokens = b\"\".join(self.vocab[idx] for idx in ids)\n",
+    "        text = tokens.decode(\"utf-8\", errors=\"replace\")\n",
+    "        return text\n",
+    "    def get_stats(self, ids):\n",
+    "        counts = {}\n",
+    "        for pair in zip(ids, ids[1:]): #Pythonic way to interate\n",
+    "            counts[pair] = counts.get(pair, 0) +1\n",
+    "        return counts\n",
+    "    def merge(self, ids, pair, idx):\n",
+    "        newids = []\n",
+    "        i = 0\n",
+    "        while i < len(ids):\n",
+    "            if i < len(ids) - 1 and ids[i] == pair[0] and ids[i+1] == pair[1]:\n",
+    "                newids.append(idx)\n",
+    "                i += 2\n",
+    "            else:\n",
+    "                newids.append(ids[i])\n",
+    "                i += 1\n",
+    "        return newids"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 240,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['Hello', '!', ' How', \"'ve\", ' you', ' been', '?']\n",
+      "self.token_len!!!!!!!!!!!\n",
+      "24642\n",
+      "240\n",
+      "top_pair:  (101, 32)\n",
+      "merging (101, 32) into a new token 256\n",
+      "merging (105, 110) into a new token 257\n",
+      "merging (115, 32) into a new token 258\n",
+      "merging (116, 104) into a new token 259\n",
+      "merging (101, 114) into a new token 260\n",
+      "merging (99, 111) into a new token 261\n",
+      "merging (116, 32) into a new token 262\n",
+      "merging (226, 128) into a new token 263\n",
+      "merging (44, 32) into a new token 264\n",
+      "merging (97, 110) into a new token 265\n",
+      "merging (111, 114) into a new token 266\n",
+      "merging (100, 32) into a new token 267\n",
+      "merging (97, 114) into a new token 268\n",
+      "merging (101, 110) into a new token 269\n",
+      "merging (257, 103) into a new token 270\n",
+      "merging (261, 100) into a new token 271\n",
+      "merging (121, 32) into a new token 272\n",
+      "merging (46, 32) into a new token 273\n",
+      "merging (97, 108) into a new token 274\n",
+      "merging (259, 256) into a new token 275\n",
+      "self.id_len!!!!!!!!!!!\n",
+      "19490\n"
+     ]
+    }
+   ],
+   "source": [
+    "rtoken = RegexTokenizer()\n",
+    "# btoken.train(\"taylorswift.txt\",25)\n",
+    "rtoken.train(\"text1.txt\", vocab_size=276, verbose=True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 241,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "tokens length: 24642\n",
+      "ids length: 19490\n",
+      "compression ratio: 1.26X\n"
+     ]
+    }
+   ],
+   "source": [
+    "rtoken.compression_ratio()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 242,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "hello world\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(rtoken.decode(rtoken.encode(\"hello world\")))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 248,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(True, True, True)"
+      ]
+     },
+     "execution_count": 248,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ch1 = \"\"\"upporter of the arts. A benefactor of the Nashville Songwriters Hall of Fame,[610] Swift has donated $75,000 to Nashville's Hendersonville High School to help refurbish the school auditorium,[611] $4 million to build a new education center at the Country Music Hall of Fame and Museum in Nashville,[612] $60,000 to the music departments of six US colleges,[613] and $100,000 to the Nashville Symphony.[614] Also a promoter of children's literacy, she has donated money and books to schools around the country.[615][616] In 2007, Swift partnered with the Tennessee Association of Chiefs of Police to launch a campaign to protect children from online predators.[617] She has donated items to several charities for auction, including the UNICEF Tap Project and MusiCares.[618] As recipient of the Academy of Country Music's Entertainer of the Year in 2011, Swift donated $25,000 to St. Jude Children's Research Hospital, Tennessee.[619] In 2012, Swift participated in the Stand Up to Cancer telethon, performing the charity single \"Ronan\", which she wrote in memory of a four-year-old boy who died of neuroblastoma.[620] She has also donated $100,000 to the V Foundation for Cancer Research[621] and $50,000 to the Children's Hospital of Philadelphia.[622] Swift has encouraged young people to volunteer in their local communities as part of Global Youth Service Day.[623]\n",
+    "Swift donated to fellow singer-songwriter Kesha to help with her legal battles against Dr. Luke and to actress Mariska Hargitay's Joyful Heart Foundation.[593][624] During the COVID-19 pandemic, Swift donated to the World Health Organization and Feeding America,[625] and supported independent record stores.[626][627] Swift performed \"Soon You'll Get Better\" on the One World: Together At Home television special, a benefit concert curated by Lady Gaga for Global Citizen to raise funds for the World Health Organization's COVID-19 Solidarity Response Fund.[628] In 2018 and 2021, Swift donated to the Rape, Abuse & Incest National Network in honor of Sexual Assault Awareness and Prevention Month.[593][629] She has made donations to her fans several times for their medical or academic expenses.[630] In December 2023, Swift attended Ramy Youssef's fundraiser for the Gaza Strip.[631]\n",
+    "Discography\"\"\"\n",
+    "\n",
+    "ch2 = \"\"\"ard Professor Critiques Taylor Swift's New Poems\". Cosmopolitan. Retrieved December 21, 2021.\n",
+    " Sheffield, Rob (October 13, 2023). \"Taylor Swift's 'Era\"\"\"\n",
+    "\n",
+    "ch3 = \"\"\"\n",
+    "Eras Tour' Debut Slays (And Could Break All-Time Touring Record)\". Pollstar. March 18, 2023. Archived from the original on March 20, 2023. Retrieved June 30, 2023.\n",
+    " Aramesh, Waiss David (March 18, 2023). \"Taylor Swift's The Eras Tour Is a 3-Hour Career-Spanning Victory Lap\". Rolling Stone. OCLC 1787396. Archived from the original on March 18, 2023. Retrieved June 30, 2023.\n",
+    " Gambles, Sarah (July 23, 2023). \"The ubiquitous power of Taylor Swift\". Deseret News. Retrieved July 23, 2023.\n",
+    " McCormick, Neil (March 18, 2023). \"Taylor Swift:\n",
+    "\"\"\"\n",
+    "\n",
+    "rtoken.decode(rtoken.encode(ch1)) == ch1,\\\n",
+    "rtoken.decode(rtoken.encode(ch2)) == ch2,\\\n",
+    "rtoken.decode(rtoken.encode(ch3)) == ch3"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 257,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'hello world!!!? (안녕하세요!) lol123 😉'"
+      ]
+     },
+     "execution_count": 257,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import tiktoken\n",
+    "enc = tiktoken.get_encoding(\"cl100k_base\") # this is the GPT-4 tokenizer\n",
+    "ids = enc.encode(\"hello world!!!? (안녕하세요!) lol123 😉\")\n",
+    "text = enc.decode(ids) # get the same text back\n",
+    "text"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 258,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 258,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ids_r = rtoken.encode(\"hello world!!!? (안녕하세요!) lol123 😉\")\n",
+    "rtext = rtoken.decode(ids_r)\n",
+    "rtext == text"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 259,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "False"
+      ]
+     },
+     "execution_count": 259,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ids_r == ids"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 216,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "byte_shuffle = {i: enc._mergeable_ranks[bytes([i])] for i in range(256)}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 218,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# byte_shuffle"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.2"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

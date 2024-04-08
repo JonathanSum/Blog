@@ -176,6 +176,16 @@
   },
   {
    "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import os\n",
+    "os.environ[\"PATH\"] += os.pathsep + 'D:/Program Files (x86)/Graphviz2.38/bin/'"
+   ]
+  },
+  {
+   "cell_type": "code",
    "execution_count": 7,
    "metadata": {},
    "outputs": [],
