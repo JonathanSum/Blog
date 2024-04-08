@@ -19,6 +19,8 @@ const ex_name = [
   "wave_net",
   "gpt2_part1",
   "gpt2_part2",
+  "byte",
+  "byte_ex",
 ];
 
 function App() {

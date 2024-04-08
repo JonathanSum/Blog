@@ -22,6 +22,8 @@ const ex_name = [
   "wave_net",
   "gpt2_part1",
   "gpt2_part2",
+  "byte",
+  "byte_ex",
 ];
 type Anchor = "top" | "left" | "bottom" | "right";
 const Sidebar = ({ mode, setMode }: { mode: string; setMode: any }) => {
@@ -209,18 +211,6 @@ const Sidebar = ({ mode, setMode }: { mode: string; setMode: any }) => {
             </ListItemIcon>
             <ListItemText
               primary="GPT Exercises Part1"
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    sx={{ display: "inline" }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    Auto-diff Engine
-                  </Typography>
-                </React.Fragment>
-              }
             />
           </ListItemButton>
         </ListItem>
@@ -239,21 +229,47 @@ const Sidebar = ({ mode, setMode }: { mode: string; setMode: any }) => {
             </ListItemIcon>
             <ListItemText
               primary="GPT Exercises Part2"
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    sx={{ display: "inline" }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    Auto-diff Engine
-                  </Typography>
-                </React.Fragment>
-              }
             />
           </ListItemButton>
         </ListItem>
+
+
+        <ListItem disablePadding>
+          <ListItemButton component={RouterLink} to={`/${ex_name[10]}`}>
+            <ListItemIcon>
+              <HistoryEduIcon
+                sx={{
+                  mb: 2,
+                  display: "flex",
+                  alignItems: "top",
+                  flexWrap: "wrap",
+                }}
+              />
+            </ListItemIcon>
+            <ListItemText
+              primary="Byte Pair Encoding"
+            />
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem disablePadding>
+          <ListItemButton component={RouterLink} to={`/${ex_name[11]}`}>
+            <ListItemIcon>
+              <HistoryEduIcon
+                sx={{
+                  mb: 2,
+                  display: "flex",
+                  alignItems: "top",
+                  flexWrap: "wrap",
+                }}
+              />
+            </ListItemIcon>
+            <ListItemText
+              primary="Byte Pair Encoding Exercise"
+            />
+          </ListItemButton>
+        </ListItem>
+
 
         <ListItem disablePadding>
           <ListItemButton component={RouterLink} to="/try">

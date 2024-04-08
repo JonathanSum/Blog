@@ -30,6 +30,8 @@ const dict: { [key: string]: string } = {
   wave_net: "/wave_net.json",
   gpt2_part1: "/gpt2_part1.json",
   gpt2_part2: "/gpt2_part2.json",
+  byte: "/byte.json",
+  byte_ex: "/byte_ex.json",
 };
 
 // const dict_bookmark: { [key: string]: number } = {
@@ -52,6 +54,8 @@ const title: { [key: string]: string } = {
   wave_net: "WaveNet",
   gpt2_part1: "GPT Exercises Part 1",
   gpt2_part2: "GPT Exercises Part 2",
+  byte: "Byte Pair Encoding",
+  byte_ex: "Byte Pair Encoding Exercises",
 };
 const Notebook = ({ link }: { link: string }) => {
   const [notebook, setNotebooks] = useState([]);
